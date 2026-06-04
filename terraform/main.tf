@@ -34,3 +34,15 @@ resource "azurerm_storage_account_static_website" "main" {
   storage_account_id = azurerm_storage_account.main.id
   index_document     = "index.html"
 }
+resource "azurerm_storage_blob" "index" {
+  name                   = "index.html"
+  storage_account_name   = azurerm_storage_account.main.name
+  storage_container_name = "$web"
+  type                   = "Block"
+  source                 = abspath("${path.module}/../app/index.html")
+  content_type           = "text/html"
+
+  depends_on = [
+    azurerm_storage_account_static_website.main
+  ]
+}
