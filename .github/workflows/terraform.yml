@@ -1,4 +1,4 @@
-name: Terraform CI
+name: Terraform CI and Website Deployment
 
 on:
   push:
@@ -8,11 +8,12 @@ on:
 
 jobs:
   terraform:
-    name: Terraform Init Format Validate
+    name: Terraform Init Format Validate and Deploy Website
     runs-on: ubuntu-latest
 
     env:
       ARM_ACCESS_KEY: ${{ secrets.ARM_ACCESS_KEY }}
+      WEB_STORAGE_ACCESS_KEY: ${{ secrets.WEB_STORAGE_ACCESS_KEY }}
 
     defaults:
       run:
@@ -33,3 +34,13 @@ jobs:
 
       - name: Terraform Validate
         run: terraform validate
+
+      - name: Deploy website files to Azure Static Website
+        if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+        run: |
+          az storage blob upload-batch \
+            --account-name iacwebc9ti3i \
+            --account-key "$WEB_STORAGE_ACCESS_KEY" \
+            --destination '$web' \
+            --source ../app \
+            --overwrite true
