@@ -1,3 +1,4 @@
+# No-op update to refresh GitHub Actions status
 terraform {
   required_version = ">= 1.0.0"
 
